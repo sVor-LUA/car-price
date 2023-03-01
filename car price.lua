@@ -42,7 +42,7 @@ function main()
 
         --systemMessage("[TEST] ",car_list[1][2][1])
 
-        systemMessage("[CAR PRICE] ","Car Price успешно запущен (v0.0.1)! Автор - sVor.")
+        systemMessage("[CAR PRICE] ","Скрипт успешно запущен (v0.0.1)! Автор - sVor.")
         systemMessage("[CAR PRICE] ","Информация о командах - {c0c0c0}/chelp{ffffff}.")
         sampRegisterChatCommand("chelp", cmd_info)
         sampRegisterChatCommand("csearch", searchCar)
@@ -261,11 +261,12 @@ function ev.onSetObjectMaterialText(id, data)
 	if object and doesObjectExist(object) then
         if getObjectModel(object) == 6885 then
             --systemMessage("", data.text)
+            LoadINI()
             if not data.text:match("(.+)%{......%}id: (%d+)") then
                 local car_name, car_price = data.text:match("(.+)%{......%}(.+) руб.")
                 systemMessage("[DATA] ", "Данные автомобиля {ff0000}"..car_name.."{ffffff} были обновлены (автобазар). Добавлена цена: {ff0000}"..car_price.."р{ffffff}.")
                 local result_car_name = car_name:gsub(" ", "_")
-                if mainIni.cars[car_name:gsub(" ", "_")] == nil then
+                if not mainIni.cars[car_name:gsub(" ", "_")] then
                     systemMessage("", "Записано новое значение!")
                     mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price):gsub("%.", "")
                 else
