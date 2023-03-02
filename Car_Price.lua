@@ -42,6 +42,8 @@ for car_name, car_prices in pairs(mainIni.cars) do
     table.insert(car_list, {car_name:gsub("_", " "), prices})
 end
 
+local secondCarNum = false
+
 local url1 = "https://raw.githubusercontent.com"
 
 function main()
@@ -87,267 +89,283 @@ function cmd_creg()
 end
 
 function cmd_set_max(param)
-    LoadINI()
-    local name_car, max_price = string.match(param, "(.+) (.+)")
-    if name_car == nil or max_price == nil or type(tonumber(max_price)) ~= "number" or max_price:find("%.") then systemMessage("[MAX PRICE] ","Введите: /cmax [название машины] [макс. цена (0 - выкл.)]") 
-    systemMessage("[MAX PRICE] ","Примечание: Название должно совпадать с серверным.")
-    else
-        local found = false
-        for i, car in ipairs(car_list) do
-            if name_car == car[1] then
-                found = true
-                if tonumber(max_price) > 0 then
-                    systemMessage("[MAX PRICE] ", "Максимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} изменена на {ff0000}"..separator(max_price).."р{ffffff}!")
-                    mainIni.maxPrice[name_car:gsub(" ", "_")] = max_price
-                    inicfg.save(mainIni, directIni)
-                else
-                    systemMessage("[MAX PRICE] ", "Максимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} была сброшена!")
-                    mainIni.maxPrice[name_car:gsub(" ", "_")] = nil
-                    inicfg.save(mainIni, directIni)
-                end 
-                break
-            end
-        end
-    
-        if not found then
-            systemMessage("[MAX PRICE] ","Авто не найдено. Возможно вы имели ввиду:")
-            local text = "Нет"
+    if not secondCarNum then
+        LoadINI()
+        local name_car, max_price = string.match(param, "(.+) (.+)")
+        if name_car == nil or max_price == nil or type(tonumber(max_price)) ~= "number" or max_price:find("%.") then systemMessage("[MAX PRICE] ","Введите: /cmax [название машины] [макс. цена (0 - выкл.)]") 
+        systemMessage("[MAX PRICE] ","Примечание: Название должно совпадать с серверным.")
+        else
+            local found = false
             for i, car in ipairs(car_list) do
-                local coloredCarName = string.gsub(car[1], name_car, "{FF0000}%0{FFFFFF}")
-                if string.find(string.lower(car[1]), string.lower(name_car)) ~= nil then
-                    text = "- " .. coloredCarName
-                    systemMessage("",text)
+                if name_car == car[1] then
+                    found = true
+                    if tonumber(max_price) > 0 then
+                        systemMessage("[MAX PRICE] ", "Максимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} изменена на {ff0000}"..separator(max_price).."р{ffffff}!")
+                        mainIni.maxPrice[name_car:gsub(" ", "_")] = max_price
+                        inicfg.save(mainIni, directIni)
+                    else
+                        systemMessage("[MAX PRICE] ", "Максимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} была сброшена!")
+                        mainIni.maxPrice[name_car:gsub(" ", "_")] = nil
+                        inicfg.save(mainIni, directIni)
+                    end 
+                    break
                 end
             end
-            if text == "Нет" then
-                systemMessage("","- Нет похожих авто.")
+        
+            if not found then
+                systemMessage("[MAX PRICE] ","Авто не найдено. Возможно вы имели ввиду:")
+                local text = "Нет"
+                for i, car in ipairs(car_list) do
+                    local coloredCarName = string.gsub(car[1], name_car, "{FF0000}%0{FFFFFF}")
+                    if string.find(string.lower(car[1]), string.lower(name_car)) ~= nil then
+                        text = "- " .. coloredCarName
+                        systemMessage("",text)
+                    end
+                end
+                if text == "Нет" then
+                    systemMessage("","- Нет похожих авто.")
+                end
             end
         end
     end
 end
 
 function cmd_set_min(param)
-    LoadINI()
-    local name_car, min_price = string.match(param, "(.+) (.+)")
-    if name_car == nil or min_price == nil or type(tonumber(min_price)) ~= "number" or min_price:find("%.") then systemMessage("[MIN PRICE] ","Введите: /cmin [название машины] [мин. цена (0 - выкл.)]") 
-    systemMessage("[MIN PRICE] ","Примечание: Название должно совпадать с серверным.")
-    else
-        local found = false
-        for i, car in ipairs(car_list) do
-            if name_car == car[1] then
-                found = true
-                if tonumber(min_price) > 0 then
-                    systemMessage("[MIN PRICE] ", "Минимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} изменена на {ff0000}"..separator(min_price).."р{ffffff}!")
-                    mainIni.minPrice[name_car:gsub(" ", "_")] = min_price
-                    inicfg.save(mainIni, directIni)
-                else
-                    systemMessage("[MIN PRICE] ", "Минимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} была сброшена!")
-                    mainIni.minPrice[name_car:gsub(" ", "_")] = nil
-                    inicfg.save(mainIni, directIni)
-                end 
-                --[[mainIni.cars[name_car:gsub(" ", "_")] = mainIni.cars[name_car:gsub(" ", "_")] .. ", " .. price_car
-                inicfg.save(mainIni, directIni)]]
-                break
-            end
-        end
-    
-        if not found then
-            systemMessage("[MIN PRICE] ","Авто не найдено. Возможно вы имели ввиду:")
-            local text = "Нет"
+    if not secondCarNum then
+        LoadINI()
+        local name_car, min_price = string.match(param, "(.+) (.+)")
+        if name_car == nil or min_price == nil or type(tonumber(min_price)) ~= "number" or min_price:find("%.") then systemMessage("[MIN PRICE] ","Введите: /cmin [название машины] [мин. цена (0 - выкл.)]") 
+        systemMessage("[MIN PRICE] ","Примечание: Название должно совпадать с серверным.")
+        else
+            local found = false
             for i, car in ipairs(car_list) do
-                local coloredCarName = string.gsub(car[1], name_car, "{FF0000}%0{FFFFFF}")
-                if string.find(string.lower(car[1]), string.lower(name_car)) ~= nil then
-                    text = "- " .. coloredCarName
-                    systemMessage("",text)
+                if name_car == car[1] then
+                    found = true
+                    if tonumber(min_price) > 0 then
+                        systemMessage("[MIN PRICE] ", "Минимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} изменена на {ff0000}"..separator(min_price).."р{ffffff}!")
+                        mainIni.minPrice[name_car:gsub(" ", "_")] = min_price
+                        inicfg.save(mainIni, directIni)
+                    else
+                        systemMessage("[MIN PRICE] ", "Минимальная цена записи для автомобиля {ff0000}"..name_car.."{ffffff} была сброшена!")
+                        mainIni.minPrice[name_car:gsub(" ", "_")] = nil
+                        inicfg.save(mainIni, directIni)
+                    end 
+                    --[[mainIni.cars[name_car:gsub(" ", "_")] = mainIni.cars[name_car:gsub(" ", "_")] .. ", " .. price_car
+                    inicfg.save(mainIni, directIni)]]
+                    break
                 end
             end
-            if text == "Нет" then
-                systemMessage("","- Нет похожих авто.")
+        
+            if not found then
+                systemMessage("[MIN PRICE] ","Авто не найдено. Возможно вы имели ввиду:")
+                local text = "Нет"
+                for i, car in ipairs(car_list) do
+                    local coloredCarName = string.gsub(car[1], name_car, "{FF0000}%0{FFFFFF}")
+                    if string.find(string.lower(car[1]), string.lower(name_car)) ~= nil then
+                        text = "- " .. coloredCarName
+                        systemMessage("",text)
+                    end
+                end
+                if text == "Нет" then
+                    systemMessage("","- Нет похожих авто.")
+                end
             end
         end
     end
 end
 
 function cmd_add_data(param)
-    LoadINI()
-    local name_car, price_car = string.match(param, "(.+) (.+)")
-    local name_car_toSave = name_car
-    if name_car == nil or price_car == nil or type(tonumber(price_car)) ~= "number" or price_car:find("%.") then systemMessage("[DATA] ","Введите: /cadddata [название машины] [цена]")
-    systemMessage("[DATA] ","Примечание: Название должно совпадать с серверным.")
-    else
-        local found = false
-        for i, car in ipairs(car_list) do
-            if name_car == car[1] then
-                found = true
-                systemMessage("[DATA] ","Цена {ff0000}"..separator(price_car).."р{ffffff} была добавлена к автомобилю {ff0000}"..name_car.."{ffffff}!")
-                mainIni.cars[name_car:gsub(" ", "_")] = mainIni.cars[name_car:gsub(" ", "_")] .. ", " .. price_car
-                inicfg.save(mainIni, directIni)
-                break
-            end
-        end
-    
-        if not found then
-            systemMessage("[DATA] ","Авто не найдено. Возможно вы имели ввиду:")
-            local text = "Нет"
+    if not secondCarNum then
+        LoadINI()
+        local name_car, price_car = string.match(param, "(.+) (.+)")
+        local name_car_toSave = name_car
+        if name_car == nil or price_car == nil or type(tonumber(price_car)) ~= "number" or price_car:find("%.") then systemMessage("[DATA] ","Введите: /cadddata [название машины] [цена]")
+        systemMessage("[DATA] ","Примечание: Название должно совпадать с серверным.")
+        else
+            local found = false
             for i, car in ipairs(car_list) do
-                local coloredCarName = string.gsub(car[1], name_car, "{FF0000}%0{FFFFFF}")
-                if string.find(string.lower(car[1]), string.lower(name_car)) ~= nil then
-                    text = "- " .. coloredCarName
-                    systemMessage("",text)
+                if name_car == car[1] then
+                    found = true
+                    systemMessage("[DATA] ","Цена {ff0000}"..separator(price_car).."р{ffffff} была добавлена к автомобилю {ff0000}"..name_car.."{ffffff}!")
+                    mainIni.cars[name_car:gsub(" ", "_")] = mainIni.cars[name_car:gsub(" ", "_")] .. ", " .. price_car
+                    inicfg.save(mainIni, directIni)
+                    break
                 end
             end
-            if text == "Нет" then
-                systemMessage("","- Нет похожих авто.")
+        
+            if not found then
+                systemMessage("[DATA] ","Авто не найдено. Возможно вы имели ввиду:")
+                local text = "Нет"
+                for i, car in ipairs(car_list) do
+                    local coloredCarName = string.gsub(car[1], name_car, "{FF0000}%0{FFFFFF}")
+                    if string.find(string.lower(car[1]), string.lower(name_car)) ~= nil then
+                        text = "- " .. coloredCarName
+                        systemMessage("",text)
+                    end
+                end
+                if text == "Нет" then
+                    systemMessage("","- Нет похожих авто.")
+                end
             end
         end
     end
 end
 
 function cmd_clear_car(carName)
-    LoadINI()
-    if #carName > 0 then
-        local found = false
-        for i, car in ipairs(car_list) do
-            if carName == car[1] then
-                found = true
-                systemMessage("[CLEAR] ","Цены на автомобиль {ff0000}"..car[1].."{ffffff} удалены из базы!")
-                if carName:find(" ") then
-                    carName = carName:gsub(" ", "_")
-                end
-                mainIni.cars[carName] = "0"
-                inicfg.save(mainIni, directIni)
-                break
-            end
-        end
-    
-        if not found then
-            systemMessage("[CLEAR] ","Авто не найдено. Возможно вы имели ввиду:")
-            local text = "Нет"
+    if not secondCarNum then
+        LoadINI()
+        if #carName > 0 then
+            local found = false
             for i, car in ipairs(car_list) do
-                local coloredCarName = string.gsub(car[1], carName, "{FF0000}%0{FFFFFF}")
-                if string.find(string.lower(car[1]), string.lower(carName)) ~= nil then
-                    text = "- " .. coloredCarName
-                    systemMessage("",text)
+                if carName == car[1] then
+                    found = true
+                    systemMessage("[CLEAR] ","Цены на автомобиль {ff0000}"..car[1].."{ffffff} удалены из базы!")
+                    if carName:find(" ") then
+                        carName = carName:gsub(" ", "_")
+                    end
+                    mainIni.cars[carName] = "0"
+                    inicfg.save(mainIni, directIni)
+                    break
                 end
             end
-            if text == "Нет" then
-                systemMessage("","- Нет похожих авто.")
+        
+            if not found then
+                systemMessage("[CLEAR] ","Авто не найдено. Возможно вы имели ввиду:")
+                local text = "Нет"
+                for i, car in ipairs(car_list) do
+                    local coloredCarName = string.gsub(car[1], carName, "{FF0000}%0{FFFFFF}")
+                    if string.find(string.lower(car[1]), string.lower(carName)) ~= nil then
+                        text = "- " .. coloredCarName
+                        systemMessage("",text)
+                    end
+                end
+                if text == "Нет" then
+                    systemMessage("","- Нет похожих авто.")
+                end
             end
+        else
+            systemMessage("[CLEAR] ","Введите: /cclear [название машины]") 
         end
-    else
-        systemMessage("[CLEAR] ","Введите: /cclear [название машины]") 
     end
 end
 
 function cmd_del_car(carName)
-    LoadINI()
-    if #carName > 0 then
-        local found = false
-        for i, car in ipairs(car_list) do
-            if carName == car[1] then
-                found = true
-                systemMessage("[DELETE] ","Автомобиль {ff0000}"..car[1].."{ffffff} удалён из базы!")
-                if carName:find(" ") then
-                    carName = carName:gsub(" ", "_")
-                end
-                mainIni.cars[carName] = nil
-                inicfg.save(mainIni, directIni)
-                break
-            end
-        end
-    
-        if not found then
-            systemMessage("[DELETE]","Авто не найдено. Возможно вы имели ввиду:")
-            local text = "Нет"
+    if not secondCarNum then
+        LoadINI()
+        if #carName > 0 then
+            local found = false
             for i, car in ipairs(car_list) do
-                local coloredCarName = string.gsub(car[1], carName, "{FF0000}%0{FFFFFF}")
-                if string.find(string.lower(car[1]), string.lower(carName)) ~= nil then
-                    text = "- " .. coloredCarName
-                    systemMessage("",text)
+                if carName == car[1] then
+                    found = true
+                    systemMessage("[DELETE] ","Автомобиль {ff0000}"..car[1].."{ffffff} удалён из базы!")
+                    if carName:find(" ") then
+                        carName = carName:gsub(" ", "_")
+                    end
+                    mainIni.cars[carName] = nil
+                    inicfg.save(mainIni, directIni)
+                    break
                 end
             end
-            if text == "Нет" then
-                systemMessage("","- Нет похожих авто.")
+        
+            if not found then
+                systemMessage("[DELETE]","Авто не найдено. Возможно вы имели ввиду:")
+                local text = "Нет"
+                for i, car in ipairs(car_list) do
+                    local coloredCarName = string.gsub(car[1], carName, "{FF0000}%0{FFFFFF}")
+                    if string.find(string.lower(car[1]), string.lower(carName)) ~= nil then
+                        text = "- " .. coloredCarName
+                        systemMessage("",text)
+                    end
+                end
+                if text == "Нет" then
+                    systemMessage("","- Нет похожих авто.")
+                end
             end
+        else
+            systemMessage("[DELETE] ","Введите: /cdel [название машины]") 
         end
-    else
-        systemMessage("[DELETE] ","Введите: /cdel [название машины]") 
     end
 end
 
 function cmd_add_car(param)
-    local name_car, price_car = string.match(param, "(.+) (.+)")
-    local name_car_toSave = name_car
-    if name_car == nil or price_car == nil or type(tonumber(price_car)) ~= "number" or price_car:find("%.") then systemMessage("[ADD] ","Введите: /cadd [название машины] [цена]") 
-    systemMessage("[ADD] ","Примечание: Название должно совпадать с серверным.")
-    else
-        systemMessage("[ADD] ","Автомобиль {ff0000}"..name_car.."{ffffff} стоимостью {ff0000}"..separator(price_car).."р{ffffff} успешно добавлен в базу!")
-        if name_car:find(" ") then
-            name_car_toSave = name_car:gsub(" ", "_")
+    if not secondCarNum then
+        local name_car, price_car = string.match(param, "(.+) (.+)")
+        local name_car_toSave = name_car
+        if name_car == nil or price_car == nil or type(tonumber(price_car)) ~= "number" or price_car:find("%.") then systemMessage("[ADD] ","Введите: /cadd [название машины] [цена]") 
+        systemMessage("[ADD] ","Примечание: Название должно совпадать с серверным.")
+        else
+            systemMessage("[ADD] ","Автомобиль {ff0000}"..name_car.."{ffffff} стоимостью {ff0000}"..separator(price_car).."р{ffffff} успешно добавлен в базу!")
+            if name_car:find(" ") then
+                name_car_toSave = name_car:gsub(" ", "_")
+            end
+            mainIni.cars[name_car_toSave] = price_car
+            inicfg.save(mainIni, directIni)
         end
-        mainIni.cars[name_car_toSave] = price_car
-        inicfg.save(mainIni, directIni)
     end
 end
 
 function cmd_info()
-    systemMessage("[CMD] ","Список доступных команд:")
-    systemMessage("","» {ff0000}/chelp{ffffff} - Получить информацию о доступных командах.")
-    systemMessage("","» {ff0000}/csearch [название]{ffffff} - Получить информацию по стоимости указанного авто.")
-    systemMessage("","» {ff0000}/cadd [название] [цена]{ffffff} - Добавить информацию об авто вручную.")
-    systemMessage("","» {ff0000}/cdel [название]{ffffff} - Удалить авто из базы.")
-    systemMessage("","» {ff0000}/cclear [название]{ffffff} - Удалить все цены на данное авто из базы.")
-    systemMessage("","» {ff0000}/cadddata [название] [цена]{ffffff} - Добавить ещё одну цену на авто (DataAmount).")
-    systemMessage("","» {ff0000}/cmax [название] [цена]{ffffff} - Установить максимальную цену указанного авто для записи.")
-    systemMessage("","» {ff0000}/cmin [название] [цена]{ffffff} - Установить минимальную цену указанного авто для записи.")
+    if not secondCarNum then
+        systemMessage("[CMD] ","Список доступных команд:")
+        systemMessage("","» {ff0000}/chelp{ffffff} - Получить информацию о доступных командах.")
+        systemMessage("","» {ff0000}/csearch [название]{ffffff} - Получить информацию по стоимости указанного авто.")
+        systemMessage("","» {ff0000}/cadd [название] [цена]{ffffff} - Добавить информацию об авто вручную.")
+        systemMessage("","» {ff0000}/cdel [название]{ffffff} - Удалить авто из базы.")
+        systemMessage("","» {ff0000}/cclear [название]{ffffff} - Удалить все цены на данное авто из базы.")
+        systemMessage("","» {ff0000}/cadddata [название] [цена]{ffffff} - Добавить ещё одну цену на авто (DataAmount).")
+        systemMessage("","» {ff0000}/cmax [название] [цена]{ffffff} - Установить максимальную цену указанного авто для записи.")
+        systemMessage("","» {ff0000}/cmin [название] [цена]{ffffff} - Установить минимальную цену указанного авто для записи.")
+    end
 end
 
 function searchCar(carName)
-    LoadINI()
-    local total_price = 0
-    if #carName > 0 then
-        local found = false
-        for i, car in ipairs(car_list) do
-            if carName == car[1] then
-                found = true
-                local prices_str = ""
-                local priceData = {}
-                for k, price in ipairs(car_list[i][2]) do
-                    prices_str = prices_str .. tostring(separator(price))
-                    if k ~= #car_list[i][2] then
-                        prices_str = prices_str .. ", "
-                    end
-                    table.insert(priceData, price)
-                    total_price = total_price + price
-                end
-                local avg_price = total_price / #car_list[i][2]
-                local min_price = math.min(table.unpack(priceData))
-                local max_price = math.max(table.unpack(priceData))
-                avg_price = math.round(avg_price)
-                min_price = math.round(min_price)
-                max_price = math.round(max_price)
-                systemMessage("[SEARCH] ","Автомобиль {ff0000}"..car[1].."{ffffff}. Средняя цена: {ff0000}"..separator(avg_price).."р{ffffff}. DataAmount: {ff0000}"..#car_list[i][2]) -- car_list[i][2][1]
-                systemMessage("[SEARCH] ","Минимальная цена {ff0000}"..separator(min_price).."р{ffffff}. Максимальная цена: {ff0000}"..separator(max_price).."р{ffffff}.")
-                break
-            end
-        end
-    
-        if not found then
-            systemMessage("[SEARCH] ","Авто не найдено. Возможно вы имели ввиду:")
-            local text = "Нет"
+    if not secondCarNum then
+        LoadINI()
+        local total_price = 0
+        if #carName > 0 then
+            local found = false
             for i, car in ipairs(car_list) do
-                local coloredCarName = string.gsub(car[1], carName, "{FF0000}%0{FFFFFF}")
-                if string.find(string.lower(car[1]), string.lower(carName)) ~= nil then
-                    text = "- " .. coloredCarName
-                    systemMessage("", text)
+                if carName == car[1] then
+                    found = true
+                    local prices_str = ""
+                    local priceData = {}
+                    for k, price in ipairs(car_list[i][2]) do
+                        prices_str = prices_str .. tostring(separator(price))
+                        if k ~= #car_list[i][2] then
+                            prices_str = prices_str .. ", "
+                        end
+                        table.insert(priceData, price)
+                        total_price = total_price + price
+                    end
+                    local avg_price = total_price / #car_list[i][2]
+                    local min_price = math.min(table.unpack(priceData))
+                    local max_price = math.max(table.unpack(priceData))
+                    avg_price = math.round(avg_price)
+                    min_price = math.round(min_price)
+                    max_price = math.round(max_price)
+                    systemMessage("[SEARCH] ","Автомобиль {ff0000}"..car[1].."{ffffff}. Средняя цена: {ff0000}"..separator(avg_price).."р{ffffff}. DataAmount: {ff0000}"..#car_list[i][2]) -- car_list[i][2][1]
+                    systemMessage("[SEARCH] ","Минимальная цена {ff0000}"..separator(min_price).."р{ffffff}. Максимальная цена: {ff0000}"..separator(max_price).."р{ffffff}.")
+                    break
                 end
             end
-            if text == "Нет" then
-                systemMessage("","- Нет похожих авто.")
+        
+            if not found then
+                systemMessage("[SEARCH] ","Авто не найдено. Возможно вы имели ввиду:")
+                local text = "Нет"
+                for i, car in ipairs(car_list) do
+                    local coloredCarName = string.gsub(car[1], carName, "{FF0000}%0{FFFFFF}")
+                    if string.find(string.lower(car[1]), string.lower(carName)) ~= nil then
+                        text = "- " .. coloredCarName
+                        systemMessage("", text)
+                    end
+                end
+                if text == "Нет" then
+                    systemMessage("","- Нет похожих авто.")
+                end
             end
+        else
+            systemMessage("[SEARCH] ","Введите: /csearch [название машины]")
         end
-    else
-        systemMessage("[SEARCH] ","Введите: /csearch [название машины]")
     end
 end
 
@@ -372,69 +390,73 @@ function systemMessage(tag, text)
 end
 
 function ev.onCreateObject(id, data) --6885
-    --systemMessage("ID: {ff0000}"..id..".{ffffff} Модель: {ff0000}"..data.modelId..".")
-    if data.modelId == 6885 --[[and playerInAB()]] then
-        local n = #markers + 1
-        markers[n] = createUser3dMarker(data.position.x, data.position.y, data.position.z + 0.9, 1)
-        lua_thread.create(function()
-            wait(timer_marker)
-            removeUser3dMarker(markers[n])
-            markers[n] = nil
-        end)
+    if not secondCarNum then
+        --systemMessage("ID: {ff0000}"..id..".{ffffff} Модель: {ff0000}"..data.modelId..".")
+        if data.modelId == 6885 --[[and playerInAB()]] then
+            local n = #markers + 1
+            markers[n] = createUser3dMarker(data.position.x, data.position.y, data.position.z + 0.9, 1)
+            lua_thread.create(function()
+                wait(timer_marker)
+                removeUser3dMarker(markers[n])
+                markers[n] = nil
+            end)
+        end
+        --[[if data.modelId == 6885 then
+            systemMessage("Автомобиль ")
+        end]]
     end
-    --[[if data.modelId == 6885 then
-        systemMessage("Автомобиль ")
-    end]]
 end
 
 function ev.onSetObjectMaterialText(id, data)
-	local object = sampGetObjectHandleBySampId(id)
-	if object and doesObjectExist(object) then
-        if getObjectModel(object) == 6885 then
-            --systemMessage("", data.text)
-            if not data.text:match("(.+)%{......%}id: (%d+)") then
-                local car_name = data.text:match("(.+)%{......%}")
-                local car_price = data.text:match("%{......%}(.+) руб.")
-                local car_price = car_price:gsub("%.", "")
-                systemMessage("[DATA] ", "Данные автомобиля {ff0000}"..car_name.."{ffffff} были обновлены (автобазар). Добавлена цена: {ff0000}"..car_price.."р{ffffff}.")
-                local result_car_name = car_name:gsub(" ", "_")
-                
-                LoadINI()
+    if not secondCarNum then
+        local object = sampGetObjectHandleBySampId(id)
+        if object and doesObjectExist(object) then
+            if getObjectModel(object) == 6885 then
+                --systemMessage("", data.text)
+                if not data.text:match("(.+)%{......%}id: (%d+)") then
+                    local car_name = data.text:match("(.+)%{......%}")
+                    local car_price = data.text:match("%{......%}(.+) руб.")
+                    local car_price = car_price:gsub("%.", "")
+                    systemMessage("[DATA] ", "Данные автомобиля {ff0000}"..car_name.."{ffffff} были обновлены (автобазар). Добавлена цена: {ff0000}"..car_price.."р{ffffff}.")
+                    local result_car_name = car_name:gsub(" ", "_")
+                    
+                    LoadINI()
 
-                if mainIni.cars[result_car_name:gsub("\n", "")] == nil then
-                    if mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil then
-                        if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] and tonumber(car_price) < mainIni.minPrice[result_car_name:gsub("\n", "")] then
+                    if mainIni.cars[result_car_name:gsub("\n", "")] == nil then
+                        if mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil then
+                            if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] and tonumber(car_price) < mainIni.minPrice[result_car_name:gsub("\n", "")] then
+                                mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price)
+                            end
+                        elseif mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] == nil then
+                            if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] then
+                                mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price)
+                            end
+                        elseif mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.minPrice[result_car_name:gsub("\n", "")] == nil then
+                            if tonumber(car_price) < mainIni.maxPrice[result_car_name:gsub("\n", "")] then
+                                mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price)
+                            end
+                        else
                             mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price)
                         end
-                    elseif mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] == nil then
-                        if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] then
-                            mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price)
-                        end
-                    elseif mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.minPrice[result_car_name:gsub("\n", "")] == nil then
-                        if tonumber(car_price) < mainIni.maxPrice[result_car_name:gsub("\n", "")] then
-                            mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price)
-                        end
+                        inicfg.save(mainIni, directIni)
                     else
-                        mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price)
+                        if mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil then
+                            if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] and tonumber(car_price) < mainIni.minPrice[result_car_name:gsub("\n", "")] then
+                                mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
+                            end
+                        elseif mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] == nil then
+                            if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] then
+                                mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
+                            end
+                        elseif mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.minPrice[result_car_name:gsub("\n", "")] == nil then
+                            if tonumber(car_price) < mainIni.maxPrice[result_car_name:gsub("\n", "")] then
+                                mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
+                            end
+                        else
+                            mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
+                        end
+                        inicfg.save(mainIni, directIni)
                     end
-                    inicfg.save(mainIni, directIni)
-                else
-                    if mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil then
-                        if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] and tonumber(car_price) < mainIni.minPrice[result_car_name:gsub("\n", "")] then
-                            mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
-                        end
-                    elseif mainIni.minPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.maxPrice[result_car_name:gsub("\n", "")] == nil then
-                        if tonumber(car_price) > mainIni.minPrice[result_car_name:gsub("\n", "")] then
-                            mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
-                        end
-                    elseif mainIni.maxPrice[result_car_name:gsub("\n", "")] ~= nil and mainIni.minPrice[result_car_name:gsub("\n", "")] == nil then
-                        if tonumber(car_price) < mainIni.maxPrice[result_car_name:gsub("\n", "")] then
-                            mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
-                        end
-                    else
-                        mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price)
-                    end
-                    inicfg.save(mainIni, directIni)
                 end
             end
         end
