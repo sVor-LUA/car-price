@@ -56,6 +56,7 @@ function main()
 end
 
 function cmd_add_data(param)
+    LoadINI()
     local name_car, price_car = string.match(param, "(.+) (.+)")
     local name_car_toSave = name_car
     if name_car == nil or price_car == nil or type(tonumber(price_car)) ~= "number" or price_car:find("%.") then systemMessage("[DATA] ","Введите: /cadddata [название машины] [цена]") 
@@ -204,6 +205,7 @@ function searchCar(carName)
                     total_price = total_price + price
                 end
                 local avg_price = total_price / #car_list[i][2]
+                avg_price = math.round(avg_price)
                 systemMessage("[SEARCH] ","Автомобиль {ff0000}"..car[1].."{ffffff}. Средняя цена: {ff0000}"..separator(avg_price).."р{ffffff}. DataAmount: {ff0000}"..#car_list[i][2]) -- car_list[i][2][1]
                 break
             end
@@ -213,10 +215,10 @@ function searchCar(carName)
             systemMessage("[SEARCH] ","Авто не найдено. Возможно вы имели ввиду:")
             local text = "Нет"
             for i, car in ipairs(car_list) do
-                local coloredCarName = string.gsub(car[1], string.lower(carName), "{FF0000}%0{FFFFFF}")
+                local coloredCarName = string.gsub(car[1], carName, "{FF0000}%0{FFFFFF}")
                 if string.find(string.lower(car[1]), string.lower(carName)) ~= nil then
                     text = "- " .. coloredCarName
-                    systemMessage("",text)
+                    systemMessage("", text)
                 end
             end
             if text == "Нет" then
@@ -237,6 +239,11 @@ function LoadINI()
         end
         table.insert(car_list, {car_name:gsub("_", " "), prices})
     end
+end
+
+math.round = function(num, idp)
+    local mult = 10^(idp or 0)
+    return math.floor(num * mult + 0.5) / mult
 end
 
 function systemMessage(tag, text)
@@ -261,19 +268,21 @@ function ev.onSetObjectMaterialText(id, data)
 	if object and doesObjectExist(object) then
         if getObjectModel(object) == 6885 then
             --systemMessage("", data.text)
-            LoadINI()
             if not data.text:match("(.+)%{......%}id: (%d+)") then
-                local car_name, car_price = data.text:match("(.+)%{......%}(.+) руб.")
+                local car_name = data.text:match("(.+)%{......%}")
+                local car_price = data.text:match("%{......%}(.+) руб.")
                 systemMessage("[DATA] ", "Данные автомобиля {ff0000}"..car_name.."{ffffff} были обновлены (автобазар). Добавлена цена: {ff0000}"..car_price.."р{ffffff}.")
                 local result_car_name = car_name:gsub(" ", "_")
-                if not mainIni.cars[car_name:gsub(" ", "_")] then
-                    systemMessage("", "Записано новое значение!")
+                
+                LoadINI()
+
+                if mainIni.cars[result_car_name:gsub("\n", "")] == nil then
                     mainIni.cars[result_car_name:gsub("\n", "")] = tostring(car_price):gsub("%.", "")
+                    inicfg.save(mainIni, directIni)
                 else
-                    systemMessage("", "Записано значение!")
-                    mainIni.cars[car_name:gsub(" ", "_")] = mainIni.cars[car_name:gsub(" ", "_")] .. ", " .. tostring(car_price):gsub("%.", "") 
+                    mainIni.cars[result_car_name:gsub("\n", "")] = mainIni.cars[result_car_name:gsub("\n", "")] .. ", " .. tostring(car_price):gsub("%.", "")
+                    inicfg.save(mainIni, directIni)
                 end
-                inicfg.save(mainIni, directIni)
             end
         end
     end
@@ -296,6 +305,15 @@ function isValidServer()
     end
     return false
 end
+
+--[[function separator(num)
+    local formatted = tostring(num)
+    while true do
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1.%2')
+        if k == 0 then break end
+    end
+    return formatted
+end]]
 
 function separator(text)
 	for S in string.gmatch(text, "%d+") do
